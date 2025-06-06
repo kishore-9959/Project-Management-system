@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add New Task</title>
+
+    <!-- Bootstrap 4 CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <!-- jQuery UI CSS -->
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
+    <!-- Internal CSS -->
+    <style>
+        body {
+            background: linear-gradient(135deg, #74ebd5, #acb6e5);
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            width: 100%;
+            max-width: 900px;
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #343a40;
+            font-weight: 700;
+            font-size: 30px;
+        }
+        label {
+            font-weight: 600;
+            color: #495057;
+            font-size: 14px;
+        }
+        .form-control {
+            border-radius: 12px;
+            padding: 10px 15px;
+            font-size: 15px;
+        }
+        .form-control:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 8px rgba(0, 123, 255, 0.3);
+            background-color: #f8f9fa;
+        }
+        .btn-primary {
+            width: 100%;
+            padding: 12px;
+            font-weight: bold;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            border: none;
+            font-size: 16px;
+        }
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #2575fc, #6a11cb);
+        }
+        .back-btn {
+            background-color: #f44336;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 50%;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+        .small-text {
+            font-size: 12px;
+            color: #6c757d;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+    <!-- Back Button -->
+    <button class="back-btn" onclick="history.back()">←</button>
+
+    <h2>Add New Task</h2>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <label for="id_state">State</label>
+                {{ form.state }}
+            </div>
+            <div class="form-group col-md-6">
+                <label for="id_district">District</label>
+                {{ form.district }}
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <label for="id_business_area">Business Area</label>
+                {{ form.business_area }}
+            </div>
+            <div class="form-group col-md-6">
+                <label for="id_block">Block</label>
+                {{ form.block }}
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <label for="id_milestone">Milestone</label>
+                {{ form.milestone }}
+            </div>
+            <div class="form-group col-md-6">
+                <label for="id_assign_to">Assign To</label>
+                {{ form.assign_to }}
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="id_task_name">Task Name</label>
+            {{ form.task_name }}
+        </div>
+
+        <div class="form-group">
+            <label for="id_subtasks">Subtasks</label>
+            {{ form.subtasks }}
+        </div>
+
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <label for="id_start_date">Start Date <span class="small-text">(Pick from calendar)</span></label>
+                {{ form.start_date }}
+            </div>
+            <div class="form-group col-md-6">
+                <label for="id_end_date">Estimated End Date <span class="small-text">(Pick from calendar)</span></label>
+                {{ form.end_date }}
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="id_status">Status</label>
+            {{ form.status }}
+        </div>
+
+        <button type="submit" class="btn btn-primary">Submit Task</button>
+    </form>
+</div>
+
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- jQuery UI -->
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Bootstrap JS -->
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const districtChoices = {
+        'AP': [['EG', 'East Godavari'], ['WG', 'West Godavari'], ['VSP', 'Visakhapatnam']],
+        'TS': [['HYD', 'Hyderabad'], ['RRS', 'Ranga Reddy'], ['KHM', 'Khammam']],
+        'KA': [['BLR', 'Bangalore'], ['MYS', 'Mysuru'], ['HBL', 'Hubballi']],
+        'TN': [['CHN', 'Chennai'], ['CBE', 'Coimbatore'], ['MDU', 'Madurai']],
+        'MH': [['MUM', 'Mumbai'], ['PUN', 'Pune'], ['NGP', 'Nagpur']],
+        'OD': [['BBS', 'Bhubaneswar'], ['CTC', 'Cuttack'], ['RKL', 'Rourkela']],
+        'RJ': [['JPR', 'Jaipur'], ['JOD', 'Jodhpur'], ['UDA', 'Udaipur']],
+        'GJ': [['AMD', 'Ahmedabad'], ['RJT', 'Rajkot'], ['VAD', 'Vadodara']],
+        'WB': [['KOL', 'Kolkata'], ['HWH', 'Howrah'], ['SLG', 'Siliguri']],
+        'UP': [['LKO', 'Lucknow'], ['VNS', 'Varanasi'], ['AGC', 'Agra']]
+    };
+
+    const stateSelect = document.getElementById("id_state");
+    const districtSelect = document.getElementById("id_district");
+
+    function populateDistricts(stateCode, selectedDistrict = null) {
+        districtSelect.innerHTML = "<option value=''>Select District</option>";
+
+        if (districtChoices[stateCode]) {
+            districtChoices[stateCode].forEach(function(pair) {
+                let option = document.createElement("option");
+                option.value = pair[0];
+                option.text = pair[1];
+
+                if (selectedDistrict && selectedDistrict === pair[0]) {
+                    option.selected = true;
+                }
+
+                districtSelect.appendChild(option);
+            });
+        }
+    }
+
+    stateSelect.addEventListener("change", function () {
+        populateDistricts(this.value);
+    });
+
+    const currentState = stateSelect.value;
+    const selectedDistrict = districtSelect.getAttribute("data-selected");
+
+    if (currentState) {
+        populateDistricts(currentState, selectedDistrict);
+    }
+});
+
+
+</script>
+
+</body>
+</html>

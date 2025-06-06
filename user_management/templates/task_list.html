@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task List</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .header-background {
+            background-image: url('https://images.unsplash.com/photo-1542744094-3a31f272c490');
+            background-size: cover;
+            background-position: center;
+            padding: 60px 0;
+            text-align: center;
+            color: rgb(208, 25, 25);
+        }
+
+        .navbar-brand {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="header-background">
+        <h1>POLYCAB Project Management System</h1>
+    </div>
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="#">POLYCAB PMS</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'user_list_admin' %}">
+                            <i class="bi bi-people-fill"></i> User Management
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'task_list' %}">
+                            <i class="bi bi-list-check"></i> Task Management
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'logout' %}">
+                            <i class="bi bi-box-arrow-right"></i> Logout
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container my-5">
+        <h2 class="text-center mb-4">Task List</h2>
+        <a href="{% url 'admin_dashboard' %}" class="btn btn-secondary mb-4">Back to Dashboard</a>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <table class="table table-bordered table-striped" id="task-table">
+            <thead class="table-dark">
+                <tr>
+                    <th>S.No</th>
+                    <th>Task Name</th>
+                    <th>Sub Tasks</th>
+                    <th>Milestone</th>
+                    <th>Assign To</th>
+                    <th>State</th>
+                    <th>Business Area</th>
+                    <th>District</th>
+                    <th>Block</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for task in tasks %}
+                    <tr>
+                        <td>{{ task.id }}</td>
+                        <td>{{ task.task_name }}</td>
+                        <td>{{ task.subtasks }}</td>
+                        <td>{{ task.milestone }}</td>
+                        <td>{{ task.assign_to }}</td>
+                        <td>{{ task.state }}</td>
+                        <td>{{ task.business_area }}</td>
+                        <td>{{ task.district }}</td>
+                        <td>{{ task.block }}</td>
+                        <td>{{ task.start_date }}</td>
+                        <td>{{ task.end_date }}</td>
+                        <td>{{ task.status }}</td>
+                        <td>
+                            <a href="{% url 'update_task' task.id %}" class="btn btn-warning btn-sm">Edit</a>
+                            <a href="{% url 'delete_task' task.id %}" class="btn btn-danger btn-sm">Delete</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <a href="{% url 'create_task' %}" class="btn btn-primary mt-3">Create New Task</a>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    
+    <script>
+        // Districts based on selected state
+        document.addEventListener("DOMContentLoaded", function () {
+    const districtChoices = {
+        'AP': [['EG', 'East Godavari'], ['WG', 'West Godavari'], ['VSP', 'Visakhapatnam']],
+        'TS': [['HYD', 'Hyderabad'], ['RRS', 'Ranga Reddy'], ['KHM', 'Khammam']],
+        'KA': [['BLR', 'Bangalore'], ['MYS', 'Mysuru'], ['HBL', 'Hubballi']],
+        'TN': [['CHN', 'Chennai'], ['CBE', 'Coimbatore'], ['MDU', 'Madurai']],
+        'MH': [['MUM', 'Mumbai'], ['PUN', 'Pune'], ['NGP', 'Nagpur']],
+        'OD': [['BBS', 'Bhubaneswar'], ['CTC', 'Cuttack'], ['RKL', 'Rourkela']],
+        'RJ': [['JPR', 'Jaipur'], ['JOD', 'Jodhpur'], ['UDA', 'Udaipur']],
+        'GJ': [['AMD', 'Ahmedabad'], ['RJT', 'Rajkot'], ['VAD', 'Vadodara']],
+        'WB': [['KOL', 'Kolkata'], ['HWH', 'Howrah'], ['SLG', 'Siliguri']],
+        'UP': [['LKO', 'Lucknow'], ['VNS', 'Varanasi'], ['AGC', 'Agra']]
+    };
+
+    const stateSelect = document.getElementById("id_state");
+    const districtSelect = document.getElementById("id_district");
+
+    function populateDistricts(stateCode, selectedDistrict = null) {
+        districtSelect.innerHTML = "<option value=''>Select District</option>";
+
+        if (districtChoices[stateCode]) {
+            districtChoices[stateCode].forEach(function(pair) {
+                let option = document.createElement("option");
+                option.value = pair[0];
+                option.text = pair[1];
+
+                if (selectedDistrict && selectedDistrict === pair[0]) {
+                    option.selected = true;
+                }
+
+                districtSelect.appendChild(option);
+            });
+        }
+    }
+
+    stateSelect.addEventListener("change", function () {
+        populateDistricts(this.value);
+    });
+
+    const currentState = stateSelect.value;
+    const selectedDistrict = districtSelect.getAttribute("data-selected");
+
+    if (currentState) {
+        populateDistricts(currentState, selectedDistrict);
+    }
+});
+
+</script>  
+
+</body>
+</html>
